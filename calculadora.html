@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de pH y Concentraciones</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #e5ff00, #ff6b6b); /* Updated colors for Universidad Mayor */
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+        h1 {
+            font-size: 10px;
+            margin-bottom: 10px;
+            color: #ff6b6b; /* Universidad Mayor theme color */
+        }
+        h2 {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+        }
+        select {
+            background: #023e8a;
+            color: white;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+        .input-group input {
+            flex: 1;
+        }
+        .input-group button {
+            background: #ff6b6b;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 5px;
+            color: white;
+        }
+        button:hover {
+            background: #d90429;
+        }
+        .result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .logo {
+            max-width: 30px; /* Reduced size */
+            margin-bottom: 20px;
+            border: 3px solid #023e8a;
+            border-radius: 10px;
+            background-color: #ff6b6b;
+            padding: 3px; /* Further reduced padding */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Universidad Mayor Header -->
+    <h1>Universidad Mayor</h1>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAnFBMVEVHcEwHSlEQSU7ACg/BCQ8FR05iaTPgOQDBAQrEAQnBAAo0OkYhVVCJdSnVSgLFCAe7BhAARk9SOULCAgt2ICoARU6yDRFVLzQARU7BAAnBAArBAAk2Oj1SYDmKGiMYREkARU7BTRF0aC01Vj7viwHBiB3NLwKZFhu0Zh0HSUpGcnIDREksX2DLAAC4AAhkhHtGbF8CR1ADR1CmDRd0EP5iAAAANHRSTlMAHF9bF8z//9syOZL9///0kz8Jwfv///3cRu7//v7+/+7+/v7+/v7+/v7+/v7/5/7+tJhS8BLjsgAAAShJREFUeAF10tUagkAQhmG6G4Y1CGEl1rW9/2szGFv5Tt9n5ugX3hMlWRFGElVNN75UMa0h03Zczw/Ce9GAVmxgCWh6SiaYGg44nc2xNMv1ogRs8YaoVU1hDJfLZTOK85bCCKYdybokK/9hSqimVV6blJ+Ilru1ptU96icWuUvZijPat9kPEq1mbM0Yq73kHf3NZjPPNAoMGOO06t4wXAAH3lWUXXNWVMvS66ftFHECALyotLVzfbzTNDK/ZlgvBNL2e4evOHXz4oaxOaB4uGFZeH1Od7mrkXRAZcDoCLeyoq36WsvR5oGASYtBS1KkGSnQZvJzHoBxmCPh19cptrkbHmLHbwyEV9HhE4NIeNcje6H/ZqiS+sBY/jSc++GG8cjoI1E6Ke9XFxc3NRCnV22QAAAAAElFTkSuQmCC">
+
+    
+     <h2>🔬 Cálculo de pH</h2>
+    
+    <label for="tipo">Tipo de solución:</label>
+    <select id="tipo">
+        <option value="acido_fuerte">Ácido Fuerte</option>
+        <option value="acido_debil">Ácido Débil</option>
+        <option value="base_fuerte">Base Fuerte</option>
+        <option value="base_debil">Base Débil</option>
+    </select>
+
+    <label for="concentracion">Concentración (M):</label>
+    <div class="input-group">
+        <input type="text" id="concentracion" placeholder="Ej: 1.0e-3">
+        <button onclick="insertarE('concentracion')">e</button>
+    </div>
+
+    <label for="ka_kb">Ka o Kb (solo para débiles):</label>
+    <div class="input-group">
+        <input type="text" id="ka_kb" placeholder="Ej: 1.8e-5">
+        <button onclick="insertarE('ka_kb')">e</button>
+    </div>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div class="result" id="ph">pH: -</div>
+    <div class="result" id="h_concentration">[H+]: -</div>
+    <div class="result" id="oh_concentration">[OH-]: -</div>
+</div>
+
+<script>
+    function insertarE(id) {
+        const input = document.getElementById(id);
+        if (!input.value.includes("e")) {
+            input.value += "e";
+        }
+    }
+
+    function calcular() {
+        const tipo = document.getElementById("tipo").value;
+        const concentracion = parseFloat(document.getElementById("concentracion").value);
+        const ka_kb = parseFloat(document.getElementById("ka_kb").value);
+        const kw = 1e-14; // Constante del agua
+
+        if (isNaN(concentracion) || concentracion <= 0) {
+            alert("⚠️ Ingresa una concentración válida.");
+            return;
+        }
+
+        let h_conc = 0, oh_conc = 0, ph = 0;
+
+        try {
+            if (tipo === "acido_fuerte") {
+                h_conc = concentracion;
+                oh_conc = kw / h_conc;
+            } else if (tipo === "acido_debil") {
+                if (isNaN(ka_kb) || ka_kb <= 0) {
+                    alert("⚠️ Ingresa un Ka válido.");
+                    return;
+                }
+                h_conc = Math.sqrt(ka_kb * concentracion);
+                oh_conc = kw / h_conc;
+            } else if (tipo === "base_fuerte") {
+                oh_conc = concentracion;
+                h_conc = kw / oh_conc;
+            } else if (tipo === "base_debil") {
+                if (isNaN(ka_kb) || ka_kb <= 0) {
+                    alert("⚠️ Ingresa un Kb válido.");
+                    return;
+                }
+                oh_conc = Math.sqrt(ka_kb * concentracion);
+                h_conc = kw / oh_conc;
+            }
+
+            ph = -Math.log10(h_conc);
+
+            document.getElementById("ph").innerText = `pH: ${ph.toFixed(2)}`;
+            document.getElementById("h_concentration").innerText = `[H+]: ${h_conc.toExponential(2)} M`;
+            document.getElementById("oh_concentration").innerText = `[OH-]: ${oh_conc.toExponential(2)} M`;
+        } catch (error) {
+            alert("⚠️ Ocurrió un error al calcular. Verifica los valores ingresados.");
+        }
+    }
+</script> 
+
+</body>
+</html>
